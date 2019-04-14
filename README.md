@@ -34,25 +34,41 @@ ip=`dig +short $fqdn`
 gw=`ip route  |grep default |awk '{print $3}'`
 
 sed -i "s/^.*$/$node/" /mnt/etc/hostname
+
 sed -i "s/^10.*$/$ip\t\t$fqdn\t$node/" /mnt/etc/hosts
+
 sed -i "s/^GATEWAY=.*$/GATEWAY=$gw/" /mnt/etc/sysconfig/network
+
 sed -i "s/^IPADDR=.*$/IPADDR=$ip/" /mnt/etc/sysconfig/network-scripts/ifcfg-eth0
+
 sed -i "s/^myhostname=.*$/myhostname=$fqdn/" /mnt/etc/postfix/main.cf
+
 sed -i "s/^mydomain=.*$/mydomain=$fqdn/" /mnt/etc/postfix/main.cf
 
 
 cat /mnt/etc/hostname
+
 cat /mnt/etc/hosts |grep slc
+
 cat /mnt/etc/sysconfig/network |grep GATE
+
 cat /mnt/etc/sysconfig/network-scripts/ifcfg-eth0 |grep IPADDR
+
 egrep "^myhostname|^mydomain" /mnt/etc/postfix/main.cf
 
+
 umount -l /mnt
+
 lvchange -an centos/root
+
 sleep 2
+
 kpartx -d /dev/loop0
+
 losetup -d /dev/loop0
+
 virsh create /etc/libvirt/qemu/$node.xml
+
 
 done
 
